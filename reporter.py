@@ -470,6 +470,7 @@ class ReportGenerator:
                     <strong>Vulnerability Description:</strong>
                     <p>{escape(description)}</p>
                 </div>
+            </div>
 """
                 
                 html += """

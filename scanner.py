@@ -237,31 +237,25 @@ class SQLInjectionScanner:
         """
         params = []
         
-        if method.upper() == 'GET':
-            # Extraer parámetros de la URL
-            parsed_url = urlparse(url)
-            query_params = parse_qs(parsed_url.query)
-            params = list(query_params.keys())
-        else:
-            # Intentar descubrir parámetros del formulario HTML
-            try:
-                response = self.session.get(url, timeout=self.timeout)
-                soup = BeautifulSoup(response.text, 'html.parser')
-                
-                # Buscar inputs en formularios
-                forms = soup.find_all('form')
-                for form in forms:
-                    inputs = form.find_all(['input', 'textarea', 'select'])
-                    for inp in inputs:
-                        name = inp.get('name')
-                        if name and name not in params:
-                            params.append(name)
-            except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
-                # Si no puede conectar, retornar lista vacía
-                pass
-            except Exception:
-                # Cualquier otro error, continuar sin parámetros descubiertos
-                pass
+        # Intentar descubrir parámetros del formulario HTML
+        try:
+            response = self.session.get(url, timeout=self.timeout)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            # Buscar inputs en formularios
+            forms = soup.find_all('form')
+            for form in forms:
+                inputs = form.find_all(['input', 'textarea', 'select'])
+                for inp in inputs:
+                    name = inp.get('name')
+                    if name and name not in params:
+                        params.append(name)
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+            # Si no puede conectar, retornar lista vacía
+            pass
+        except Exception:
+            # Cualquier otro error, continuar sin parámetros descubiertos
+            pass
         
         return params
     
