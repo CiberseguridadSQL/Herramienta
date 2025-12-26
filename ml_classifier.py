@@ -193,7 +193,7 @@ class SQLInjectionMLClassifier:
         vuln_probability = probabilities[1] if len(probabilities) > 1 else 0.0
         
         # Determinar confianza
-        if vuln_probability >= 0.8:
+        if vuln_probability >= 0.9:
             confidence = 'high'
             pred_label = 'vulnerable'
         elif vuln_probability >= 0.5:

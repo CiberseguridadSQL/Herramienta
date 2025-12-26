@@ -182,22 +182,22 @@ python detector.py --url http://localhost:5000 --endpoint /buscar_empleado --met
 
 **Sin verbose:**
 ```bash
-python detector.py --url http://localhost:5000 --endpoint /productos --method GET --payload-set time_based --params "categoria" --timeout 15 --report productos_scan.html
+python detector.py --url http://localhost:5000 --endpoint /productos --method POST --payload-set time_based --params "categoria" --timeout 15 --report productos_scan.html
 ```
 
 **Con verbose (recomendado):**
 ```bash
-python detector.py --url http://localhost:5000 --endpoint /productos --method GET --payload-set time_based --params "categoria" --timeout 15 --report productos_scan.html --verbose
+python detector.py --url http://localhost:5000 --endpoint /productos --method POST --payload-set time_based --params "categoria" --timeout 15 --report productos_scan.html --verbose
 ```
 
 **Con timeout aumentado (recomendado para time-based):**
 ```bash
-python detector.py --url http://localhost:5000 --endpoint /productos --method GET --payload-set time_based --params "categoria" --timeout 20 --aggressive --report productos_scan.html --verbose
+python detector.py --url http://localhost:5000 --endpoint /productos --method POST --payload-set time_based --params "categoria" --timeout 20 --aggressive --report productos_scan.html --verbose
 ```
 
 **Con todos los payloads:**
 ```bash
-python detector.py --url http://localhost:5000 --endpoint /productos --method GET --attack all --params "categoria" --timeout 20 --report productos_scan.html --verbose
+python detector.py --url http://localhost:5000 --endpoint /productos --method POST --attack all --params "categoria" --timeout 20 --report productos_scan.html --verbose
 ```
 
 **Payloads de ejemplo que funcionan:**

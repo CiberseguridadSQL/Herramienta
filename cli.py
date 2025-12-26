@@ -135,6 +135,18 @@ Ejemplos de uso:
         action='store_true',
         help='Verificar certificados SSL (default: False)'
     )
+
+    parser.add_argument(
+        '--forced-params',
+        type=str,
+        help='Define un parámetro con un valor fijo. Separe cada valor por comas (,)'
+    )
+
+    parser.add_argument(
+        '--forced-values',
+        type=str,
+        help='Define valores para los parámetros fijos. Separe cada valor por comas (,)'
+    )
     
     return parser.parse_args()
 

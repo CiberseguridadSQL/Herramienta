@@ -36,6 +36,24 @@ def main():
         # Parsear cookies y headers
         cookies = parse_json_input(args.cookies) if args.cookies else {}
         headers = parse_json_input(args.headers) if args.headers else {}
+
+        #Obtener argumentos forzados
+        if args.forced_params is not None:
+            forcedParameters= args.forced_params.split(",")
+        else:
+            forcedParameters= []
+        if args.forced_values is not None:
+            forcedValues= args.forced_values.split(",")
+        else:
+            forcedValues=[]
+
+        if not isinstance(forcedParameters, list) or not isinstance(forcedValues, list):
+            print("[!] Error: se esperaban arrays (listas) para argumentos y valores forzados")
+            sys.exit(1)
+        
+        if len(forcedParameters) != len(forcedValues):
+            print("[!] Error: argumentos y parámetros forzados tienen longitudes incompatibles")
+            sys.exit(1)
         
         # Obtener payloads según modo
         payloads = get_payloads_by_mode(args.attack, args.payload_set)
@@ -107,7 +125,9 @@ def main():
                         full_url,
                         method=method,
                         params=params,
-                        payloads=payloads
+                        payloads=payloads,
+                        forcedParams=forcedParameters,
+                        forcedValues=forcedValues
                     )
                 except KeyboardInterrupt:
                     print("\n[!] Scan interrupted by user")

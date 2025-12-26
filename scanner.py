@@ -102,7 +102,9 @@ class SQLInjectionScanner:
         except:
             return False
     
-    def inject_payload_get(self, url: str, param_name: str, payload: str) -> Dict:
+    def inject_payload_get(self, url: str, param_name: str, payload: str,
+                           forcedParams: Optional[List[str]]= None,
+                           forcedValues: Optional[List[str]]= None) -> Dict:
         """
         Inyecta payload en parámetro GET
         """
@@ -111,8 +113,13 @@ class SQLInjectionScanner:
             # URL encode el payload pero mantener caracteres importantes para SQLi
             encoded_payload = quote(payload, safe="'\"-")
             # Construir URL directamente
-            target_url = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}?{param_name}={encoded_payload}"
-            
+            target_url = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}?"
+            if forcedParams is not None:
+                for i in range(len(forcedParams)):
+                    target_url += f"{forcedParams[i]}={forcedValues[i]}&"
+
+            target_url += f"{param_name}={encoded_payload}"
+
             start_time = time.time()
             response = self.session.get(target_url, timeout=self.timeout)
             elapsed_time = time.time() - start_time
@@ -168,7 +175,9 @@ class SQLInjectionScanner:
             }
     
     def inject_payload_post(self, url: str, data: Dict, param_name: str, 
-                           payload: str) -> Dict:
+                           payload: str,
+                           forcedParams: Optional[List[str]]= None,
+                           forcedValues: Optional[List[str]]= None) -> Dict:
         """
         Inyecta payload en parámetro POST
         """
@@ -176,6 +185,9 @@ class SQLInjectionScanner:
             # Crear copia de datos y agregar payload
             test_data = data.copy()
             test_data[param_name] = payload
+            if forcedParams is not None:
+                for i in range(len(forcedParams)):
+                    test_data[forcedParams[i]]=forcedValues[i]
             
             start_time = time.time()
             response = self.session.post(url, data=test_data, timeout=self.timeout)
@@ -261,7 +273,9 @@ class SQLInjectionScanner:
     
     def scan_endpoint(self, url: str, method: str = 'GET', 
                      params: Optional[List[str]] = None,
-                     payloads: List[Dict] = None) -> List[Dict]:
+                     payloads: Optional[List[Dict]] = None,
+                     forcedParams: Optional[List[str]]= None,
+                     forcedValues: Optional[List[str]]= None) -> List[Dict]:
         """
         Escanea un endpoint completo con todos los payloads
         """
@@ -333,9 +347,9 @@ class SQLInjectionScanner:
                 for true_payload in boolean_true_payloads:
                     try:
                         if method.upper() == 'GET':
-                            true_resp = self.inject_payload_get(url, param, true_payload)
+                            true_resp = self.inject_payload_get(url, param, true_payload,forcedParams=forcedParams,forcedValues=forcedValues)
                         else:
-                            true_resp = self.inject_payload_post(url, base_data, param, true_payload)
+                            true_resp = self.inject_payload_post(url, base_data, param, true_payload,forcedParams=forcedParams,forcedValues=forcedValues)
                         if not true_resp.get('connection_error'):
                             true_responses.append(true_resp)
                     except:
@@ -374,9 +388,9 @@ class SQLInjectionScanner:
                 
                 try:
                     if method.upper() == 'GET':
-                        test_response = self.inject_payload_get(url, param, payload)
+                        test_response = self.inject_payload_get(url, param, payload, forcedParams=forcedParams, forcedValues=forcedValues)
                     else:
-                        test_response = self.inject_payload_post(url, base_data, param, payload)
+                        test_response = self.inject_payload_post(url, base_data, param, payload, forcedParams=forcedParams, forcedValues=forcedValues)
                     
                     # Si hay error de conexión, incrementar contador
                     if test_response.get('connection_error'):
