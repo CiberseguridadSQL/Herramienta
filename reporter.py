@@ -353,7 +353,7 @@ class ReportGenerator:
             
             # Incluir vulnerabilidades confirmadas y potenciales
             vulnerabilities = [r for r in scan_results 
-                            if r.get('detector_result', {}).get('vulnerable', False)]
+                             if r.get('detector_result', {}).get('vulnerable', False)]
             
             # También incluir respuestas con confianza media/alta aunque no estén marcadas como vulnerables
             potential_vulns = [r for r in scan_results 
@@ -411,6 +411,43 @@ class ReportGenerator:
                     html += """                    </ul>
                 </div>
 """
+                    
+                    # --- NUEVO BLOQUE: PROOF OF CONCEPT / SNIPPET ---
+                    indicators = detector_result.get('indicators', {})
+                    proof_html = ""
+                    
+                    # Caso 1: Error Based - Mostrar el error exacto
+                    if 'error_snippet' in indicators:
+                        snippet = indicators['error_snippet']
+                        proof_html = f"""
+                        <div class="evidence" style="background: #fff0f0; border-left: 4px solid #dc3545;">
+                            <strong>🔎 Smoking Gun (SQL Error Found):</strong>
+                            <pre style="background: #333; color: #fff; padding: 10px; border-radius: 4px; overflow-x: auto; margin-top: 5px;">...{escape(snippet)}...</pre>
+                        </div>
+                        """
+                    
+                    # Caso 2: Boolean/Time/Union - Mostrar preview de respuesta
+                    elif 'response_preview' in indicators:
+                        preview = indicators['response_preview']
+                        proof_html = f"""
+                        <div class="evidence" style="background: #f8f9fa; border-left: 4px solid #6c757d;">
+                            <strong>📄 Response Preview (First 300 chars):</strong>
+                            <pre style="background: #fff; border: 1px solid #ddd; padding: 10px; color: #555; font-size: 0.9em; overflow-x: auto; margin-top: 5px;">{preview}...</pre>
+                        </div>
+                        """
+                    
+                    # Caso 3: Inyección de datos (Filtered Query detectada)
+                    elif 'filtered_query' in indicators:
+                         query = indicators['filtered_query']
+                         proof_html = f"""
+                        <div class="evidence" style="background: #fff3cd; border-left: 4px solid #ffc107;">
+                            <strong>⚠️ Leaked Query:</strong>
+                            <pre style="background: #333; color: #f1c40f; padding: 10px;">{escape(query)}</pre>
+                        </div>
+                        """
+
+                    html += proof_html
+                    # ------------------------------------------------
                     
                     if ml_result and ml_result.get('prediction') != 'unknown':
                         ml_prob = ml_result.get('probability', 0.0)
@@ -489,4 +526,3 @@ class ReportGenerator:
 """
         
         return html
-

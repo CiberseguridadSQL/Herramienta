@@ -75,15 +75,27 @@ class SQLInjectionDetector:
     def __init__(self):
         self.error_patterns = [re.compile(pattern, re.IGNORECASE) for pattern in self.SQL_ERROR_PATTERNS]
     
-    def detect_sql_errors(self, response_text: str) -> List[str]:
+    def detect_sql_errors(self, response_text: str) -> List[Dict]:
         """
-        Detecta mensajes de error SQL en la respuesta
-        Retorna lista de patrones encontrados
+        Detecta errores SQL y extrae el contexto (snippet) para el reporte.
+        Retorna una lista de diccionarios con el patrón y el fragmento encontrado.
         """
         found_errors = []
         for pattern in self.error_patterns:
-            if pattern.search(response_text):
-                found_errors.append(pattern.pattern)
+            match = pattern.search(response_text)
+            if match:
+                # Extraer contexto: 50 caracteres antes y después del error
+                start = max(0, match.start() - 50)
+                end = min(len(response_text), match.end() + 50)
+                snippet = response_text[start:end]
+                
+                # Limpiar saltos de línea excesivos para que se vea bien en el reporte
+                snippet = " ".join(snippet.split())
+                
+                found_errors.append({
+                    'pattern': pattern.pattern,
+                    'snippet': snippet
+                })
         return found_errors
     
     def detect_time_based_sqli(self, response_time: float, payload_type: str) -> bool:
@@ -182,7 +194,7 @@ class SQLInjectionDetector:
         return diff_ratio >= threshold or abs(test_length - base_length) > 30
     
     def evaluate_payload(self, payload_info: Dict, base_response: Dict, 
-                        test_response: Dict) -> Dict:
+                         test_response: Dict) -> Dict:
         """
         Evalúa un payload completo usando múltiples criterios OWASP
         Retorna un dict con el análisis completo
@@ -220,8 +232,14 @@ class SQLInjectionDetector:
             result['vulnerable'] = True
             result['vulnerability_type'] = 'error_based'
             result['confidence'] = 'high'
-            result['evidence'].append(f"SQL errors detected: {', '.join(sql_errors[:3])}")
-            result['indicators']['sql_errors'] = sql_errors
+            # Extraer solo los nombres de los patrones para evidence breve
+            patterns_found = [e['pattern'] for e in sql_errors]
+            result['evidence'].append(f"SQL errors detected: {', '.join(patterns_found[:3])}")
+            
+            # GUARDAR LA PRUEBA REAL (SNIPPET)
+            result['indicators']['sql_errors'] = patterns_found
+            # Guardamos el primer fragmento encontrado como prueba visual
+            result['indicators']['error_snippet'] = sql_errors[0]['snippet']
         
         # 2. Detección time-based
         if self.detect_time_based_sqli(test_time, payload_type):
@@ -408,6 +426,17 @@ class SQLInjectionDetector:
                 result['confidence'] = 'medium'
                 result['evidence'].append(f"SQL payload caused response change (length diff: {abs(test_length - base_length)}, similarity: {html_analysis['similarity']:.2%})")
         
+        # 13. Si es vulnerable, intentar guardar un preview de la respuesta para el reporte
+        if result['vulnerable']:
+            # Si hay un error explícito, ya tenemos el snippet arriba.
+            # Si NO es error-based (ej: boolean blind), guardamos una diferencia o parte del body.
+            if 'error_snippet' not in result['indicators']:
+                # Guardar los primeros 300 caracteres del body como referencia
+                # O idealmente, la parte que cambió si usamos difflib (más complejo), 
+                # pero los primeros chars suelen servir para ver si cargó la página o dio error 500.
+                preview = test_text[:300].replace('<', '&lt;').replace('>', '&gt;')
+                result['indicators']['response_preview'] = preview
+        
         return result
     
     def _extract_filtered_query(self, response_text: str) -> Optional[str]:
@@ -439,4 +468,3 @@ class SQLInjectionDetector:
             'basic': 'Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta'
         }
         return descriptions.get(vuln_type, 'Unknown SQL Injection type')
-
