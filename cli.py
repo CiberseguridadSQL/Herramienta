@@ -21,7 +21,13 @@ Ejemplos de uso:
   python detector.py --url http://app.com --method POST --cookies '{"session":"abc123"}'
         """
     )
-    
+    parser.add_argument(
+        '--db',
+        type=str,
+        choices=['mysql', 'postgresql', 'mssql', 'all'],
+        default='all',
+        help='Filtrar payloads por motor de base de datos'
+    )
     # Argumentos obligatorios
     parser.add_argument(
         '--url',

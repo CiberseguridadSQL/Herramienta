@@ -14,13 +14,16 @@ class SQLInjectionScanner:
     """Scanner automatizado para detectar vulnerabilidades SQL Injection"""
     
     def __init__(self, timeout: int = 10, cookies: Optional[Dict] = None, 
-                 headers: Optional[Dict] = None, verify_ssl: bool = False):
+                 headers: Optional[Dict] = None, verify_ssl: bool = False,verbose: bool = False):
         self.timeout = timeout
         self.cookies = cookies or {}
         self.headers = headers or {}
         self.verify_ssl = verify_ssl
         self.session = requests.Session()
         self.session.verify = verify_ssl
+        self.verbose = verbose
+
+        self.session = requests.Session()
         
         # Headers por defecto
         default_headers = {
@@ -271,12 +274,13 @@ class SQLInjectionScanner:
         
         return params
     
-    def scan_endpoint(self, url: str, method: str = 'GET', 
+    def scan_endpoint(self, url: str, method: str = 'GET', verbose=False,
                      params: Optional[List[str]] = None,
                      payloads: Optional[List[Dict]] = None,
                      forcedParams: Optional[List[str]]= None,
                      forcedValues: Optional[List[str]]= None) -> List[Dict]:
-        """
+                     
+        """             
         Escanea un endpoint completo con todos los payloads
         """
         if payloads is None:
@@ -285,6 +289,9 @@ class SQLInjectionScanner:
         
         results = []
         
+        if self.verbose:
+            print(f"    [DEBUG] Enviando Cookies: {self.session.cookies.get_dict()}")
+            print(f"    [DEBUG] Enviando Headers: {self.session.headers}")
         # Descubrir parámetros si no se proporcionan
         if params is None:
             params = self.discover_parameters(url, method)
@@ -336,8 +343,9 @@ class SQLInjectionScanner:
         boolean_false_payloads = ["' OR '1'='2", "' OR 1=2--", "' OR 'a'='b"]
         
         for param_idx, param in enumerate(params):
+            param_name = param
             print(f"  [+] Testing parameter {param_idx+1}/{len(params)}: {param} ({len(payloads)} payloads)")
-            
+
             # Para boolean-blind, primero probar TRUE y FALSE explícitamente
             if any(p.get('type') == 'boolean_blind' for p in payloads):
                 true_responses = []
@@ -385,13 +393,29 @@ class SQLInjectionScanner:
             
             for idx, payload_info in enumerate(payloads):
                 payload = payload_info['payload']
+
+                if verbose:
+                     print(f"    [DEBUG] Testing payload: {payload_info['type']} on '{param_name}'")
+                     print(f"    [DEBUG] Parameter: {payload[:80]}")
                 
                 try:
-                    if method.upper() == 'GET':
+                    if method == 'GET':
                         test_response = self.inject_payload_get(url, param, payload, forcedParams=forcedParams, forcedValues=forcedValues)
                     else:
                         test_response = self.inject_payload_post(url, base_data, param, payload, forcedParams=forcedParams, forcedValues=forcedValues)
+                    if verbose:
+                        print(f"      [DEBUG] Response: {test_response['status_code']} | Time: {test_response['time']:.2f}s | Size: {test_response['length']} bytes")
                     
+                    # Guardar metadatos para el detector
+                    test_response['payload_info'] = payload_info
+                    test_response['base_response'] = base_response
+                    results.append(test_response)
+        
+                     # Mantén tu progreso simplificado para el modo normal
+                    if not verbose and (idx + 1) % 10 == 0:
+                       print(f"      Progress: {idx + 1}/{len(payloads)} payloads tested")
+
+                    time.sleep(0.1)
                     # Si hay error de conexión, incrementar contador
                     if test_response.get('connection_error'):
                         connection_errors += 1

@@ -1,0 +1,3222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Injection Scanner - Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #d32f2f;
+            border-bottom: 3px solid #d32f2f;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #1976d2;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-left: 10px;
+            border-left: 4px solid #1976d2;
+        }
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .summary-card h3 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .summary-card p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        .vulnerability {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .vulnerability.high {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        .vulnerability.medium {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        .vulnerability.low {
+            background: #d1ecf1;
+            border-left-color: #17a2b8;
+        }
+        .vulnerability.potential {
+            background: #fff8e1;
+            border-left-color: #ff9800;
+        }
+        .payload {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+        .evidence {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .evidence ul {
+            margin-left: 20px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin: 5px 5px 5px 0;
+        }
+        .badge.high {
+            background: #dc3545;
+            color: white;
+        }
+        .badge.medium {
+            background: #ffc107;
+            color: #333;
+        }
+        .badge.low {
+            background: #17a2b8;
+            color: white;
+        }
+        .badge.type {
+            background: #6c757d;
+            color: white;
+        }
+        .endpoint-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .metadata {
+            color: #6c757d;
+            font-size: 0.9em;
+            margin: 10px 0;
+        }
+        .ml-info {
+            background: #e7f3ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border-left: 3px solid #2196F3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        table th {
+            background: #343a40;
+            color: white;
+        }
+        table tr:hover {
+            background: #f5f5f5;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 SQL Injection Scanner - Security Report</h1>
+        <p class="metadata">Generated: 2025-12-30 22:38:52</p>
+        
+        <div class="summary">
+            <div class="summary-card">
+                <h3>1</h3>
+                <p>Endpoints Scanned</p>
+            </div>
+            <div class="summary-card">
+                <h3>1</h3>
+                <p>Vulnerable Endpoints</p>
+            </div>
+            <div class="summary-card">
+                <h3>58</h3>
+                <p>Total Vulnerabilities</p>
+            </div>
+        </div>
+
+        <div class="endpoint-section">
+            <h2>📍 /login_POST</h2>
+            <p class="metadata">URL: <code>http://192.168.1.100:5000/login</code></p>
+            <p class="metadata">Vulnerabilities Found: 58</p>
+            <p class="metadata">Potential Issues: 0</p>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR 1=1--
+                </div>
+                <span class="badge type">boolean_blind</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.59%, Diff 1118 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8134 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1118 bytes (15.9%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.59%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Boolean-based Blind SQL Injection: El servidor responde diferente según condiciones booleanas</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;1&#x27;=&#x27;1&#x27;--
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.47%, Diff 1138 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.03s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8154 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1138 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.47%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;1&#x27;=&#x27;1&#x27;--
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.47%, Diff 1138 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.03s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8154 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1138 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.47%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;1&#x27;=&#x27;1&#x27;/*
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.47%, Diff 1138 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.01s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8154 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1138 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.47%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;1&#x27;=&#x27;1&#x27;/*
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.47%, Diff 1138 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.01s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8154 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1138 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.47%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> admin&#x27;--
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.58%, Diff 1116 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8132 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1116 bytes (15.9%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.58%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> admin&#x27;--
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.58%, Diff 1116 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8132 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1116 bytes (15.9%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.58%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> admin&#x27;/*
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.58%, Diff 1116 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.01s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8132 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1116 bytes (15.9%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.58%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> admin&#x27;/*
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.58%, Diff 1116 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.01s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8132 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1116 bytes (15.9%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.58%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR 1=1--
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.59%, Diff 1118 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8134 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1118 bytes (15.9%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.59%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR 1=1--
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.59%, Diff 1118 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8134 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1118 bytes (15.9%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.59%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR 1=1/*
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.59%, Diff 1118 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8134 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1118 bytes (15.9%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.59%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR 1=1/*
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.59%, Diff 1118 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8134 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1118 bytes (15.9%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.59%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;a&#x27;=&#x27;a&#x27;--
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.47%, Diff 1138 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.12s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8154 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1138 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.47%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;a&#x27;=&#x27;a&#x27;--
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.47%, Diff 1138 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.12s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8154 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1138 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.47%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;a&#x27;=&#x27;a&#x27;/*
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.47%, Diff 1138 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8154 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1138 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.47%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;a&#x27;=&#x27;a&#x27;/*
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.47%, Diff 1138 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8154 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1138 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.47%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> 1&#x27; OR &#x27;1&#x27;=&#x27;1&#x27;--
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.46%, Diff 1139 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.03s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8155 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1139 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.46%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> 1&#x27; OR &#x27;1&#x27;=&#x27;1&#x27;--
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.46%, Diff 1139 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.03s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8155 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1139 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.46%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; UNION SELECT * FROM users--
+                </div>
+                <span class="badge type">union</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.48%, Diff 1137 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8153 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1137 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.48%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>UNION-based SQL Injection: Permite extraer datos mediante UNION SELECT</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; UNION SELECT * FROM users--
+                </div>
+                <span class="badge type">union</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.48%, Diff 1137 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8153 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1137 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.48%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>UNION-based SQL Injection: Permite extraer datos mediante UNION SELECT</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; UNION SELECT table_name FROM information_schema.tables--
+                </div>
+                <span class="badge type">union</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 99.28%, Diff 58 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>7074 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>58 bytes (0.8%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>99.28%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>UNION-based SQL Injection: Permite extraer datos mediante UNION SELECT</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; UNION SELECT table_name FROM information_schema.tables--
+                </div>
+                <span class="badge type">union</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 99.28%, Diff 58 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>7074 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>58 bytes (0.8%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>99.28%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>UNION-based SQL Injection: Permite extraer datos mediante UNION SELECT</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; UNION SELECT column_name FROM information_schema.columns--
+                </div>
+                <span class="badge type">union</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 99.26%, Diff 60 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>7076 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>60 bytes (0.9%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>99.26%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>UNION-based SQL Injection: Permite extraer datos mediante UNION SELECT</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; UNION SELECT column_name FROM information_schema.columns--
+                </div>
+                <span class="badge type">union</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 99.26%, Diff 60 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>7076 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>60 bytes (0.9%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>99.26%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>UNION-based SQL Injection: Permite extraer datos mediante UNION SELECT</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; UNION SELECT CAST(table_name AS int) FROM information_schema.tables--
+                </div>
+                <span class="badge type">union</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 99.18%, Diff 71 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>7087 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>71 bytes (1.0%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>99.18%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>UNION-based SQL Injection: Permite extraer datos mediante UNION SELECT</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>username</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; UNION SELECT CAST(table_name AS int) FROM information_schema.tables--
+                </div>
+                <span class="badge type">union</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 99.18%, Diff 71 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>7087 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>71 bytes (1.0%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>99.18%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>UNION-based SQL Injection: Permite extraer datos mediante UNION SELECT</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;1&#x27;=&#x27;1
+                </div>
+                <span class="badge type">boolean_blind</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.75%, Diff 1131 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8147 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1131 bytes (16.1%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.75%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Boolean-based Blind SQL Injection: El servidor responde diferente según condiciones booleanas</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR 1=1--
+                </div>
+                <span class="badge type">boolean_blind</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.83%, Diff 1118 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.01s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8134 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1118 bytes (15.9%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.83%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Boolean-based Blind SQL Injection: El servidor responde diferente según condiciones booleanas</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;a&#x27;=&#x27;a
+                </div>
+                <span class="badge type">boolean_blind</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.75%, Diff 1131 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.01s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8147 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1131 bytes (16.1%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.75%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Boolean-based Blind SQL Injection: El servidor responde diferente según condiciones booleanas</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;1&#x27;=&#x27;1
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.75%, Diff 1131 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.01s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8147 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1131 bytes (16.1%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.75%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;1&#x27;=&#x27;1
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.75%, Diff 1131 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.01s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8147 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1131 bytes (16.1%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.75%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;1&#x27;=&#x27;1&#x27;--
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.71%, Diff 1138 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.01s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8154 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1138 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.71%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;1&#x27;=&#x27;1&#x27;--
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.71%, Diff 1138 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.01s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8154 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1138 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.71%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;1&#x27;=&#x27;1&#x27;/*
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.71%, Diff 1138 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8154 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1138 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.71%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;1&#x27;=&#x27;1&#x27;/*
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.71%, Diff 1138 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8154 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1138 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.71%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR 1=1--
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.83%, Diff 1118 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.01s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8134 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1118 bytes (15.9%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.83%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR 1=1--
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.83%, Diff 1118 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.01s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8134 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1118 bytes (15.9%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.83%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR 1=1/*
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.83%, Diff 1118 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8134 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1118 bytes (15.9%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.83%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR 1=1/*
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.83%, Diff 1118 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8134 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1118 bytes (15.9%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.83%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;a&#x27;=&#x27;a
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.75%, Diff 1131 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.03s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8147 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1131 bytes (16.1%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.75%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;a&#x27;=&#x27;a
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.75%, Diff 1131 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.03s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8147 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1131 bytes (16.1%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.75%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;a&#x27;=&#x27;a&#x27;--
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.71%, Diff 1138 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8154 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1138 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.71%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;a&#x27;=&#x27;a&#x27;--
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.71%, Diff 1138 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8154 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1138 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.71%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;a&#x27;=&#x27;a&#x27;/*
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.71%, Diff 1138 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.03s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8154 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1138 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.71%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; OR &#x27;a&#x27;=&#x27;a&#x27;/*
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.71%, Diff 1138 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.03s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8154 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1138 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.71%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> 1&#x27; OR &#x27;1&#x27;=&#x27;1
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.74%, Diff 1132 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.03s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8148 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1132 bytes (16.1%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.74%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> 1&#x27; OR &#x27;1&#x27;=&#x27;1
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.74%, Diff 1132 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.03s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8148 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1132 bytes (16.1%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.74%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> 1&#x27; OR &#x27;1&#x27;=&#x27;1&#x27;--
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.70%, Diff 1139 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8155 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1139 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.70%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> 1&#x27; OR &#x27;1&#x27;=&#x27;1&#x27;--
+                </div>
+                <span class="badge type">basic</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.70%, Diff 1139 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8155 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1139 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.70%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>Basic SQL Injection: Inyección SQL básica que altera la lógica de la consulta</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; UNION SELECT * FROM users--
+                </div>
+                <span class="badge type">union</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.71%, Diff 1137 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.01s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8153 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1137 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.71%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>UNION-based SQL Injection: Permite extraer datos mediante UNION SELECT</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; UNION SELECT * FROM users--
+                </div>
+                <span class="badge type">union</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 91.71%, Diff 1137 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.01s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>8153 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>1137 bytes (16.2%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>91.71%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>UNION-based SQL Injection: Permite extraer datos mediante UNION SELECT</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; UNION SELECT table_name FROM information_schema.tables--
+                </div>
+                <span class="badge type">union</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 99.53%, Diff 58 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>7074 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>58 bytes (0.8%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>99.53%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>UNION-based SQL Injection: Permite extraer datos mediante UNION SELECT</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; UNION SELECT table_name FROM information_schema.tables--
+                </div>
+                <span class="badge type">union</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 99.53%, Diff 58 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.02s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>7074 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>58 bytes (0.8%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>99.53%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>UNION-based SQL Injection: Permite extraer datos mediante UNION SELECT</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; UNION SELECT column_name FROM information_schema.columns--
+                </div>
+                <span class="badge type">union</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 99.52%, Diff 60 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.03s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>7076 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>60 bytes (0.9%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>99.52%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>UNION-based SQL Injection: Permite extraer datos mediante UNION SELECT</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; UNION SELECT column_name FROM information_schema.columns--
+                </div>
+                <span class="badge type">union</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 99.52%, Diff 60 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.03s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>7076 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>60 bytes (0.9%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>99.52%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>UNION-based SQL Injection: Permite extraer datos mediante UNION SELECT</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; UNION SELECT CAST(table_name AS int) FROM information_schema.tables--
+                </div>
+                <span class="badge type">union</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 99.44%, Diff 71 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.01s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>7087 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>71 bytes (1.0%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>99.44%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>UNION-based SQL Injection: Permite extraer datos mediante UNION SELECT</p>
+                </div>
+            </div>
+
+            <div class="vulnerability medium">
+                <h3>[!] VULNERABLE - Parameter: <code>password</code></h3>
+                <div class="payload">
+                    <strong>Payload:</strong> &#x27; UNION SELECT CAST(table_name AS int) FROM information_schema.tables--
+                </div>
+                <span class="badge type">union</span>
+                <span class="badge medium">Confidence: MEDIUM</span>
+                
+                <div class="evidence">
+                    <strong>Evidence:</strong>
+                    <ul>
+                        <li>Significant change: Similarity 99.44%, Diff 71 bytes</li>
+                    </ul>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Status Code</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>Response Time</td>
+                        <td>0.01s</td>
+                    </tr>
+                    <tr>
+                        <td>Response Length</td>
+                        <td>7087 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Base Length</td>
+                        <td>7016 bytes</td>
+                    </tr>
+                    <tr>
+                        <td>Length Difference</td>
+                        <td>71 bytes (1.0%)</td>
+                    </tr>
+                    <tr>
+                        <td>HTML Similarity</td>
+                        <td>99.44%</td>
+                    </tr>
+                </table>
+
+                <div class="evidence">
+                    <strong>Vulnerability Description:</strong>
+                    <p>UNION-based SQL Injection: Permite extraer datos mediante UNION SELECT</p>
+                </div>
+            </div>
+
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Generated by SQL Injection Scanner</p>
+            <p>This report is for security testing purposes only. Use responsibly and only on systems you own or have explicit permission to test.</p>
+        </div>
+    </div>
+</body>
+</html>

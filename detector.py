@@ -7,9 +7,12 @@ Punto de entrada principal de la aplicación
 import sys
 import os
 from typing import Dict, List, Optional
-
+from cli import parse_arguments, validate_url, parse_json_input, get_payloads_by_mode, print_banner, print_summary
+# Asegúrate de que get_payloads_by_type esté disponible
+from cli import get_payloads_by_mode
 # Importar módulos
 from cli import parse_arguments, validate_url, parse_json_input, get_payloads_by_mode, print_banner, print_summary
+from payloads import get_payloads_by_type
 from scanner import SQLInjectionScanner
 from sqli_detector import SQLInjectionDetector
 from ml_classifier import SQLInjectionMLClassifier
@@ -56,15 +59,19 @@ def main():
             sys.exit(1)
         
         # Obtener payloads según modo
-        payloads = get_payloads_by_mode(args.attack, args.payload_set)
-        print(f"[*] Loaded {len(payloads)} payloads")
-        
+        if args.attack == 'all':
+            from payloads import get_payloads_by_db
+            payloads = get_payloads_by_db(db_type=args.db)
+        else:
+            payloads = get_payloads_by_type(args.attack)
+
         # Inicializar componentes
         scanner = SQLInjectionScanner(
             timeout=timeout,
             cookies=cookies,
             headers=headers,
-            verify_ssl=args.verify_ssl
+            verify_ssl=args.verify_ssl,
+            verbose=args.verbose
         )
         
         # Verificar conectividad antes de empezar
@@ -79,8 +86,14 @@ def main():
             sys.exit(1)
         print("[+] Server is accessible")
         
-        detector = SQLInjectionDetector()
+        scanner = SQLInjectionScanner(
+            timeout=args.timeout,
+            cookies=parse_json_input(args.cookies) if args.cookies else {},
+            headers=parse_json_input(args.headers) if args.headers else {},
+            verbose=args.verbose # <--- Propagación al scanner
+        )
         
+        detector = SQLInjectionDetector(verbose=args.verbose) # <--- Propagación al detector
         ml_classifier = None
         if args.ml or args.ml_model or args.train_ml:
             ml_classifier = SQLInjectionMLClassifier(model_type='random_forest')
@@ -113,7 +126,7 @@ def main():
             for endpoint in endpoints:
                 full_url = args.url.rstrip('/') + '/' + endpoint.lstrip('/')
                 print(f"\n[*] Scanning: {full_url} ({method})")
-                
+                scan_results = scanner.scan_endpoint(full_url, method, payloads=payloads)
                 # Obtener parámetros específicos si se proporcionaron
                 params = None
                 if args.params:
@@ -161,6 +174,16 @@ def main():
                     base_response,
                     result
                 )
+                if ml_classifier and ml_classifier.is_trained:
+                        ml_decision = ml_classifier.predict(result, detector_result)
+                        
+                        if args.verbose:
+                            print(f"[ML] Confidence Score: {ml_decision['score']:.4f}")
+                        
+                        # Si el detector dice VULN pero el ML está muy seguro de que es FALSO POSITIVO:
+                        if detector_result['vulnerable'] and ml_decision['label'] == 'safe':
+                             if args.verbose: print("[!] ML Override: Falso positivo detectado y descartado.")
+                             detector_result['vulnerable'] = False
                 result['detector_result'] = detector_result
                 
                 analyzed_results.append(result)

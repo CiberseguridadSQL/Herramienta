@@ -8,6 +8,7 @@ import time
 from typing import Dict, List, Optional, Tuple
 from bs4 import BeautifulSoup
 import difflib
+from urllib.parse import unquote
 
 class SQLInjectionDetector:
     """Detector de vulnerabilidades SQL Injection basado en criterios OWASP"""
@@ -71,20 +72,27 @@ class SQLInjectionDetector:
     
     # Tiempo mínimo para considerar time-based SQLi (segundos)
     TIME_BASED_THRESHOLD = 5.0
-    
-    def __init__(self):
+    def __init__(self, verbose: bool = False): # <--- Añade verbose=False
+        self.verbose = verbose                # <--- Guarda el valo
         self.error_patterns = [re.compile(pattern, re.IGNORECASE) for pattern in self.SQL_ERROR_PATTERNS]
     
-    def detect_sql_errors(self, response_text: str) -> List[str]:
+    
+    def detect_sql_errors(self, response_text: str):
         """
-        Detecta mensajes de error SQL en la respuesta
-        Retorna lista de patrones encontrados
+        Detecta mensajes de error SQL en la respuesta.
+        Retorna (True, patrón) si encuentra algo, o (False, None) si no.
         """
-        found_errors = []
+        # 1. Validación de entrada
+        if not response_text or not isinstance(response_text, str):
+            return False, None
+
+        # 2. Búsqueda eficiente (detiene el bucle al primer hallazgo)
         for pattern in self.error_patterns:
             if pattern.search(response_text):
-                found_errors.append(pattern.pattern)
-        return found_errors
+                return True, pattern.pattern
+    
+        # 3. Este return DEBE estar alineado con el 'for' y el 'if' inicial
+        return False, None
     
     def detect_time_based_sqli(self, response_time: float, payload_type: str) -> bool:
         """
@@ -182,7 +190,7 @@ class SQLInjectionDetector:
         return diff_ratio >= threshold or abs(test_length - base_length) > 30
     
     def evaluate_payload(self, payload_info: Dict, base_response: Dict, 
-                        test_response: Dict) -> Dict:
+                        test_response: Dict, verbose=False) -> Dict:
         """
         Evalúa un payload completo usando múltiples criterios OWASP
         Retorna un dict con el análisis completo
@@ -194,47 +202,122 @@ class SQLInjectionDetector:
         test_text = test_response.get('text', '')
         test_time = test_response.get('time', 0.0)
         test_status = test_response.get('status_code', 0)
+        base_status = base_response.get('status_code')
         test_length = len(test_text)
         
         base_text = base_response.get('text', '')
         base_length = len(base_text)
         
+        if verbose:
+            decoded_payload = unquote(payload_info['payload'])
+            print(f"\n    [+] Probando Payload: {decoded_payload}")
+            print(f"    [+] Comparación de Longitud: Base {base_length} bytes vs Response {test_length} bytes")
+
+            if abs(test_length - base_length) > 0:
+                diff = test_length - base_length
+                print(f"    [+] Diferencia neta: {diff:+} bytes")
         # Inicializar resultado
         result = {
             'payload': payload,
             'payload_type': payload_type,
+            'type': payload_info.get('type', 'unknown'),
             'status_code': test_status,
             'response_time': test_time,
             'response_length': test_length,
             'base_length': base_length,
             'vulnerable': False,
             'vulnerability_type': None,
+            'reason': [],
             'confidence': 'low',
             'evidence': [],
             'indicators': {}
         }
+        # 0.1. ANALIZAR ERROR-BASED
+        error_found, matched_pattern = self.detect_sql_errors(test_response.get('text', ''))
+
+       
         
+        if error_found:
+           vulnerable = True
+           confidence += 0.5
+           vuln_type = 'error_based'
+    
+           if matched_pattern:
+                sql_errors = [str(matched_pattern)]
+           else:
+                sql_errors = ["Unknown SQL Error pattern"]
+    
+           # Ahora usamos la nueva lista 'sql_errors_list' que solo contiene strings
+           result['evidence'].append(f"SQL errors detected: {', '.join(sql_errors)}")
+        # 0.2. ANALIZAR TIME-BASED
+        response_time = test_response.get('time', 0)
+        # Supongamos un umbral (threshold) de 5 segundos
+        if payload_info.get('type') == 'time_based' and response_time >= 5:
+            result['vulnerable'] = True
+            result['reason'].append(f"Response time: {response_time:.2f}s")
+            if verbose:
+                print(f"      [!] EVIDENCE: Delay detected. Response took {response_time:.2f}s (Threshold: 5.00s)")
+
+        # 0.3. ANALIZAR BOOLEAN-BLIND (Similitud HTML)
+        # Guardamos el resultado en una variable temporal
+        raw_similarity = self.analyze_html_changes(base_response.get('text', ''), test_response.get('text', ''))
+        
+        # Validamos si es diccionario o número para normalizarlo en 'similarity'
+        if isinstance(raw_similarity, dict):
+            similarity = raw_similarity.get('ratio', 0.0)
+        else:
+            similarity = raw_similarity
+        if payload_info.get('type') == 'boolean_blind':
+            # Si la similitud cae por debajo del 95%, algo cambió significativamente
+            if similarity < 0.95:
+                if verbose:
+                    print(f"      [!] EVIDENCE: Content change detected. Similarity: {similarity:.2%} (Significant difference)")
+            elif verbose:
+                 print(f"      [DEBUG] Similarity: {similarity:.2%} (No significant change)")  
+
         # 1. Detección de errores SQL
-        sql_errors = self.detect_sql_errors(test_text)
-        if sql_errors:
+        hubo_error, patron = self.detect_sql_errors(test_text)
+        
+        if hubo_error:
             result['vulnerable'] = True
             result['vulnerability_type'] = 'error_based'
             result['confidence'] = 'high'
-            result['evidence'].append(f"SQL errors detected: {', '.join(sql_errors[:3])}")
-            result['indicators']['sql_errors'] = sql_errors
-        
+            lista_para_reporte = [patron] if patron else ["SQL Error Detected"]
+            result['evidence'].append(f"SQL errors detected: {', '.join(lista_para_reporte)}")
+            result['indicators']['sql_errors'] = lista_para_reporte
+
         # 2. Detección time-based
         if self.detect_time_based_sqli(test_time, payload_type):
             result['vulnerable'] = True
             result['vulnerability_type'] = 'time_based'
             result['confidence'] = 'high'
             result['evidence'].append(f"Time-based delay detected: {test_time:.2f}s")
-            result['indicators']['time_delay'] = test_time
+            if verbose:
+                print(f"      [!] EVIDENCE: Delay detected ({test_time:.2f}s)")
         
         # 3. Análisis de cambios HTML
         html_analysis = self.analyze_html_changes(base_text, test_text)
         result['indicators']['html_analysis'] = html_analysis
+        similarity = html_analysis.get('similarity', 1.0)
+
+        # 4. LÓGICA DE VULNERABILIDAD POR CAMBIO DE CONTENIDO (Boolean/Basic)
+        if not result['vulnerable']:
+            if similarity < 0.95 or abs(test_length - base_length) > 50:
+                if payload_type in ['boolean_blind', 'basic', 'union']:
+                    result['vulnerable'] = True
+                    result['vulnerability_type'] = payload_type
+                    result['confidence'] = 'medium'
+                    result['evidence'].append(f"Significant change: Similarity {similarity:.2%}, Diff {abs(test_length - base_length)} bytes")
         
+        # 5. DETECCIÓN POR CÓDIGO DE ESTADO
+        if not result['vulnerable'] and test_status != base_status:
+            if test_status in [200, 500]:
+                result['vulnerable'] = True
+                result['vulnerability_type'] = 'basic'
+                result['evidence'].append(f"Status code changed from {base_status} to {test_status}")
+            pass
+        return result
+    
         # Detección especial para boolean-blind (comparar TRUE vs FALSE)
         if payload_type == 'boolean_blind' or test_response.get('is_boolean_test'):
             # Si tenemos información de tipo boolean (TRUE/FALSE), usarla
